@@ -10,26 +10,37 @@ RequireVersion.restore = function(module, next)  {
     return installVersion(module, next)
 }
 
-RequireVersion.execute = function(module, numberOfVersions, fn, done)  {
-    RequireVersion.list(module, 3, function(err, versions) {
-        async.eachSeries(versions, function iterator(version, cb) {
-            var versionedModule = RequireVersion(module, version, function(err) {
-                if (err) cb(err)
-                fn(module, version, cb)
-            })
-        }, done)
+RequireVersion.run = function(module, versions, fn, done)  {
+    async.eachSeries(versions, function iterator(version, cb) {
+        RequireVersion(module, version, function(err) {
+            if (err) done(err)
+            fn(require(module), version, cb)
+        })
+    }, done)
+}
+
+RequireVersion.runLast = function(module, numberOfVersions, fn, done)  {
+    if (!typeof numberOfVersions === 'number') return done(new Error("A number must be provided for the version limit"))
+    RequireVersion.list(module, function(err, versions) {
+        if (err) return done(err)
+        RequireVersion.run(module, _.take(versions, numberOfVersions), fn, done)
     })
 }
 
-RequireVersion.list = function(module, limit, next)  {
-    if (arguments.length === 2) return RequireVersion.list(arguments[0], undefined, arguments[1])
+RequireVersion.runAll = function(module, fn, done)  {
+    RequireVersion.list(module, function(err, versions) {
+        if (err) return done(err)
+        RequireVersion.run(module, versions, fn, done)
+    })
+}
+
+RequireVersion.list = function(module, next)  {
     var silent = true
     npm.load({ loaded: false }, function (err) {
         if (err) return next(err)
         npm.commands.view([ module, 'versions' ], silent, function(err, info) {
             if (err) return next(err)
             var versions = (info[_.first(_.keys(info))].versions).reverse()
-            if (limit && typeof limit === 'number') versions = _.take(versions, limit)
             next(null, versions)
         })
     })
