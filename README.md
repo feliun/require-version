@@ -17,6 +17,15 @@ First of all, require the **require-version** module in your project:
 
 After that, you can use the following available methods:
 
+### requireVersion
+
+```
+requireVersion(myModule, '0.2.7', function(err) {
+      if (err) //handle your error here
+      console.log('The module has been installed')
+})
+```
+
 ### list
 
 ```
@@ -31,6 +40,7 @@ requireVersion.list(myModule, function(err, versions) {
 ```
 requireVersion.run(myModule, [ '0.2.7', '0.0.14' ], function(module, version, next) {
     console.log('Executing logic for module ', myModule, ' and version ', version)
+    module.aSyncMethod()
     next()
 }, function(err) {
     if (err) //handle your error here
@@ -45,7 +55,7 @@ It runs all last versions to a limit specified as parameter
 ```
 requireVersion.runLast(myModule, numVersions, function(module, version, next) {
     console.log('Executing logic for module ', myModule, ' and version ', version)
-    next()
+    module.anAsyncMethod(next)
 }, function(err) {
     if (err) //handle your error here
     console.log('The last ' + numVersions + ' versions were run')
@@ -57,6 +67,7 @@ requireVersion.runLast(myModule, numVersions, function(module, version, next) {
 ```
 requireVersion.runAll(myModule, function(module, version, next) {
     console.log('Executing logic for module ', myModule, ' and version ', version)
+    module.aSyncMethod()
     next()
 }, function(err) {
     if (err) //handle your error here
