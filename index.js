@@ -19,7 +19,7 @@ RequireVersion.run = function(module, versions, fn, done)  {
     }, done)
 }
 
-RequireVersion.runLast = function(module, numberOfVersions, fn, done)  {
+RequireVersion.runLast = RequireVersion.execute = function(module, numberOfVersions, fn, done)  {
     if (!typeof numberOfVersions === 'number') return done(new Error("A number must be provided for the version limit"))
     RequireVersion.list(module, function(err, versions) {
         if (err) return done(err)
