@@ -11,9 +11,9 @@
   "license": "MIT",
   "dependencies": {
     "async": "^1.3.0",
-    "lodash": "^3.10.0"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "worksmith": "^0.2.7"
+    "worksmith": "^1.0.0"
   }
 }
